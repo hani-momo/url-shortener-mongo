@@ -20,7 +20,7 @@ A simple service for shortening a long URL to a desired length string of symbols
    git clone https://github.com/hani-momo/url-shortener-mongo.git
    cd url-shortener-mongo
 
-2. **Create & acrivate virtual env (optional): **:
+2. **Create & acrivate virtual env (optional):**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
