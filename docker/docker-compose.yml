@@ -1,0 +1,22 @@
+services:
+  django:
+    build: 
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: >
+      /entrypoint.sh
+    volumes:
+      - ../:/app
+    environment:
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_DB=shorturl_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
