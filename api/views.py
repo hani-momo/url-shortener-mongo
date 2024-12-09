@@ -9,8 +9,30 @@ from .services import generate_short_url
 
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
+=======
+def generate_short_url(length: int = 6) -> str:
+    """
+    Generate a random short URL string.
+
+    Args:
+        length: The length of the generated short URL. By default is 6.
+
+    Returns:
+        str: A randomly generated short URL of letters and digits.
+    """
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+>>>>>>> origin/master
 class ShortenURLView(APIView):
-    def post(self, request):
+    def post(self, request) -> Response:
+        """
+        Args:
+            request: object with the URL to shorten.
+
+        Returns:
+            Response: object with the shortened URL or an error message.
+        """
         try:
             original_url = request.data.get('url')
             if not original_url:
@@ -27,7 +49,17 @@ class ShortenURLView(APIView):
             return Response({"error": "An error while shortening the URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class RedirectView(APIView):
-    def get(self, request, short_url):
+    def get(self, request, short_url) -> Response:
+        """
+        Handle GET requests, retrieve the original URL from a shortened URL.
+
+        Args:
+            request
+            short_url (str)
+
+        Returns:
+            Response: object with the original URL or an error message.
+        """
         try:
             logger.info(f"Short URL: {short_url}")
             url_entry = URL.objects.get(shortened_url=short_url)
@@ -37,4 +69,9 @@ class RedirectView(APIView):
             return Response({"error": "Short URL not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error retrieving original URL: {e}")
+<<<<<<< HEAD
             return Response({"error": "An error occurred while retrieving the original URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+=======
+            return Response({"error": "An error occurred while retrieving the original URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)        
+            # return HttpResponseRedirect(url_entry.original_url)
+>>>>>>> origin/master
