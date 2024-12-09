@@ -1,5 +1,5 @@
 # URL shortener
-A simple service for shortening a long URL to a desired length string of symbols (aka short URL).
+A simple service for shortening a long URL to a desired length string of symbols (aka short URL). Considers URLs that already exist in DB to avoid redundency and duplicates.
 
 ## Used:
 - Django
