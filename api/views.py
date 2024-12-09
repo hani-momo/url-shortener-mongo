@@ -1,17 +1,13 @@
 import logging
-import random
-import string
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from mongoengine import DoesNotExist
 from .models import URL
+from .services import generate_short_url
 
 
 logger = logging.getLogger(__name__)
-
-def generate_short_url(length=6):
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 class ShortenURLView(APIView):
     def post(self, request):
@@ -21,7 +17,7 @@ class ShortenURLView(APIView):
                 logger.warning("No URL provided.")
                 return Response({"error": "URL is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-            short_url = generate_short_url()
+            short_url = generate_short_url(original_url=original_url)
             url_entry = URL(original_url=original_url, shortened_url=short_url)
             url_entry.save()
 
@@ -41,5 +37,4 @@ class RedirectView(APIView):
             return Response({"error": "Short URL not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Error retrieving original URL: {e}")
-            return Response({"error": "An error occurred while retrieving the original URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)        
-            # return HttpResponseRedirect(url_entry.original_url)
+            return Response({"error": "An error occurred while retrieving the original URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -9,6 +9,7 @@ ALLOWED_HOSTS = []
 MONGODB_HOST = os.getenv('MONGODB_HOST', 'mongo://mongo:27017/shorturl_db')
 connect(host=MONGODB_HOST)
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
