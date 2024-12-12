@@ -40,7 +40,7 @@ A simple service for shortening a long URL to a desired length string of symbols
 
 ## Usage
    ```bash
-1. curl -X POST http://localhost:8000/shorten/ -H "Content-Type: application/json" -d '{"url": "https:/original_url"}'
+1. curl -X POST http://localhost:8000/api/shorten/ -H "Content-Type: application/json" -d '{"url": "http://example.com"}'
 -> {"shortened_url":"abc123"}
-2. curl -X GET http://localhost:8000/r/abc123/
+2. curl -X GET curl http://localhost:8000/api/redirect/abc123/
 -> {"original_url":"https:/original_url"}
