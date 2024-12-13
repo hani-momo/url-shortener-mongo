@@ -7,8 +7,8 @@ A simple service for shortening a long URL to a desired length string of symbols
 - Docker
 
 ## API Endpoints:
-- POST /shorten/
-- GET /r/{short_url}
+- POST /api/shorten/
+- GET /api/{short_url}
 
 ## Prequisites
 - Docker
