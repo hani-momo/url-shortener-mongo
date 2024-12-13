@@ -1,12 +1,10 @@
 services:
   django:
     build: 
-      context: ..
-      dockerfile: docker/Dockerfile
-    command: >
-      /entrypoint.sh
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - ../:/app
+      - ./:/app
     environment:
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017

@@ -5,8 +5,8 @@ while ! nc -z mongo 27017; do
   sleep 0.1
 done
 
-echo "Applying migrations..."
+echo "Applying migrations.."
 python manage.py migrate
 
-echo "Starting Django server..."
+echo "Starting Django server.."
 exec python manage.py runserver 0.0.0.0:8000

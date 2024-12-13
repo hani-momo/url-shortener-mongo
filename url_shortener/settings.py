@@ -1,13 +1,21 @@
 import os
 from mongoengine import connect
+import mongomock
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'secret_key'
 DEBUG = True
 ALLOWED_HOSTS = []
-MONGODB_HOST = os.getenv('MONGODB_HOST', 'mongo://mongo:27017/shorturl_db')
-connect(host=MONGODB_HOST)
+MONGODB_HOST = os.getenv('MONGODB_HOST', 'localhost')
+
+connect(
+    db='mongoenginetests',
+    host=MONGODB_HOST,
+    mongo_client_class=mongomock.MongoClient
+)
+
+DATABASES = {}
 
 
 INSTALLED_APPS = [
@@ -86,13 +94,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
 STATIC_URL = 'static/'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
