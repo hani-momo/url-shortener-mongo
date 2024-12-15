@@ -7,15 +7,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'secret_key'
 DEBUG = True
 ALLOWED_HOSTS = []
-MONGODB_HOST = os.getenv('MONGODB_HOST', 'localhost')
 
+'''
+MONGO CONFIGS.
+'''
+MONGODB_HOST = os.getenv('MONGODB_HOST', 'localhost')
 connect(
-    db='mongoenginetests',
+    db='shorturl_db',
     host=MONGODB_HOST,
     mongo_client_class=mongomock.MongoClient
 )
-
-DATABASES = {}
 
 
 INSTALLED_APPS = [

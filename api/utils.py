@@ -1,9 +1,9 @@
 import base64
-import os
 import logging
-from .models import URL
+import random
 from typing import Optional
-from django.core.exceptions import ObjectDoesNotExist
+
+from .models import URL
 
 
 logger = logging.getLogger(__name__)
@@ -12,44 +12,37 @@ class ShortURLAlreadyExists(Exception):
     '''Custom Exception to handle case when short URL already exists'''
     pass
 
-def generate_short_url(length: int=6) -> str:
-    '''
-    Generate a short url for the original with base64 encoding.
 
-    Args:
-        length (int): The length of the short url
-
-    Returns:
-        str: The generated short URL.
-    '''
-    random_bytes = os.urandom(length)
-    short_url = base64.urlsafe_b64encode(random_bytes).decode('utf-8')[:length]
-    return short_url
-
-def create_short_url(original_url: str) -> str:
-    '''
-    Create a unique short URL for the original within 5 attempts.
-    If the original url already exists in the database, returns the existing short url.
-
+def generate_unique_short_url(original_url: str, length: int = 6) -> str:
+    """
+    Generates a unique short URL based on the original URL.
+    If the generated short URL already exists, it will generate a new one.
+    
     Args:
         original_url (str): The original URL to shorten.
-
-    Returns:
-        str: The generated or already existing short URL.
-    '''
-    existing_entry = check_existing_entry(original_url)
-    if existing_entry:
-        return existing_entry.shortened_url
+        length (int): The length of the short URL.
     
-    count_attempt = 5
-    while count_attempt > 0:
-        short_url = generate_short_url()
-        count_attempt -= 1
+    Returns:
+        str: A unique shortened URL.
+    """
+    original_url_bytes = original_url.encode("ascii")
+    base64_bytes = base64.b64encode(original_url_bytes)
+    base64_string = base64_bytes.decode("ascii")
 
-        if not is_short_url_exist(short_url):
-            save_url_mapping(original_url, short_url)
-            return short_url
-    raise ShortURLAlreadyExists
+    max_attempts = 10
+    attempts = 0
+
+    while attempts < max_attempts:
+        start_index = random.randint(0, len(base64_string) - length)
+        shortened = base64_string[start_index:start_index + length]
+
+        if not URL.objects.filter(shortened_url=shortened).first():
+            return shortened
+        
+        attempts += 1
+
+    raise ShortURLAlreadyExists("Unable to generate a unique short URL after multiple attempts.")
+
 
 def check_existing_entry(original_url: str) -> Optional[URL]:
     '''
@@ -61,38 +54,47 @@ def check_existing_entry(original_url: str) -> Optional[URL]:
     Returns:
         The original URL if exists, otherwise None
     '''
-    entry = URL.objects.filter(original_url=original_url).first()
-    if entry:
+    try:
+        entry = URL.objects.filter(original_url=original_url).first()
         return entry
-    return None
+    except Exception as e:
+        logger.exception(f"Error checking existing entry: {e}")
+        return None
 
-def is_short_url_exist(short_url: str) -> bool:
+
+def create_url_mapping(original_url: str, short_url: str):
+    '''Creates a URL mapping in the database if it does not already exist.'''
+    try:
+        if not URL.objects.filter(original_url=original_url).first():
+            URL.objects.create(original_url=original_url, shortened_url=short_url)
+        else:
+            logger.warning(f"URL already exists.")
+    except Exception as e:
+        logger.exception(f"Error creating short URL: {e}")
+        raise
+
+
+def create_short_url(original_url: str, length: int=6) -> str:
     '''
-    Checks if short URL already exists in the databse.
+    If the original url already exists in the database, returns the existing short url.
+    Otherwise, generates a new short url.
 
     Args:
-        short_url (str): Short URL to check.
+        original_url (str): The original URL to shorten.
+        length (int): The length of the short url
 
     Returns:
-        bool: True if short URL exists, otherwise False.
+        str: The generated short URL.
     '''
     try:
-        if URL.objects.filter(shortened_url=short_url).exists():
-            return True
-    except URL.DoesNotExist:
-        return False
+        existing_entry = check_existing_entry(original_url)
+        if existing_entry:
+            return existing_entry.shortened_url
+
+        shortened = generate_unique_short_url(original_url, length)
+        create_url_mapping(original_url, shortened)
+        return shortened
+
     except Exception as e:
-        logger.error(f"Error checking if short URL exists: {e}")
-        return False
-
-def save_url_mapping(original_url: str, short_url: str) -> None:
-    '''
-    Saves the mapping of the original URL to the short URL in the databse.
-
-    Args:
-        original_url (str): The original URL to save.
-        short_url (str): The generated short URL to save.
-    Returns:
-        None
-    '''
-    URL.objects.create(original_url=original_url, shortened_url=short_url)
+        logger.exception(f"Error creating short URL: {e}")
+        raise

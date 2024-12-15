@@ -1,11 +1,13 @@
 import logging
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from mongoengine import DoesNotExist
+
 from .models import URL
-from .utils import create_short_url
-from .utils import ShortURLAlreadyExists
+from .utils import create_short_url, ShortURLAlreadyExists
+
+from mongoengine import DoesNotExist
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +27,7 @@ class ShortenURLView(APIView):
         except Exception as e:
             logger.error(f"Error shortening original URL: {e}")
             return Response({"error": "An error while shortening the URL"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class RedirectView(APIView):
     def get(self, request, short_url):
