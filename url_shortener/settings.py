@@ -1,6 +1,5 @@
 import os
 from mongoengine import connect
-import mongomock
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -9,14 +8,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 '''
-MONGO CONFIGS.
+DATABASE
 '''
-MONGODB_HOST = os.getenv('MONGODB_HOST', 'localhost')
-connect(
-    db='shorturl_db',
-    host=MONGODB_HOST,
-    mongo_client_class=mongomock.MongoClient
-)
+MONGODB_HOST = os.environ.get('MONGODB_HOST', 'localhost')
+MONGODB_DB = os.environ.get('MONGODB_DATABASE', 'shorturl_db')
+connect(db=MONGODB_DB, host=MONGODB_HOST)
 
 
 INSTALLED_APPS = [

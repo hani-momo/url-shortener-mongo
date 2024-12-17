@@ -14,7 +14,7 @@ class ShortURLAlreadyExists(Exception):
 
 
 def generate_unique_short_url(original_url: str, length: int = 6) -> str:
-    """
+    """utils code
     Generates a unique short URL based on the original URL.
     If the generated short URL already exists, it will generate a new one.
     
