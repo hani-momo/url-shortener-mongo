@@ -10,6 +10,9 @@ A simple service for shortening a long URL to a desired length string of symbols
 - POST /api/shorten/
 - GET /api/{short_url}
 
+## Test coverage
+81%
+
 ## Prequisites
 - Docker
 - Docker Compose
